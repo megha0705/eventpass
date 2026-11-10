@@ -1,3 +1,15 @@
+<?php 
+include '../db-config.php'; 
+
+if(session_status() == PHP_SESSION_NONE){
+  session_start();
+}
+$registrations = [];
+$event_id = (int)($_GET['event_id'] ?? 0);
+if ($event_id) {
+  $registrations = mysqli_query($conn, "SELECT r.registered_at, u.name, u.email, u.phone FROM registrations r LEFT JOIN users u ON r.user_id=u.id WHERE r.event_id=$event_id ORDER BY r.registered_at DESC");
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,9 +39,16 @@
     <table class="data">
       <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Registered on</th></tr></thead>
       <tbody>
+        <?= mysqli_num_rows($registrations) > 0 ? '' : '<tr><td colspan="4">No registrations yet.</td></tr>' ?>   
         <!-- PHP: loop over registrations for this event id -->
-        <tr><td>Anita Roy</td><td>anita@example.com</td><td>9876543210</td><td>9 Nov 2026</td></tr>
-        <tr><td>Priya Das</td><td>priya@example.com</td><td>9123456780</td><td>8 Nov 2026</td></tr>
+        <?php while($registration = mysqli_fetch_assoc($registrations)): ?>
+          <tr>
+            <td><?= $registration['name'] ?></td>
+            <td><?= $registration['email'] ?></td>
+            <td><?= $registration['phone'] ?></td>
+            <td><?= $registration['registered_at'] ?></td>
+          </tr>
+        <?php endwhile; ?>
       </tbody>
     </table>
   </div>

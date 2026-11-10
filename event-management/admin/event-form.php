@@ -1,3 +1,52 @@
+<?php
+include '../db-config.php';
+if(session_status() == PHP_SESSION_NONE){
+session_start();
+}
+$message = '';
+$message_type = '';
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+$eventtitle = $_POST['title'] ?? '';
+$eventdescription = $_POST['description'] ?? '';
+$eventdate = $_POST['event_date'] ?? '';
+$eventcategory = $_POST['category'] ?? '';
+$eventstarttime = $_POST['start_time'] ?? '';
+$eventendtime = $_POST['end_time'] ?? '';
+$eventvenue = $_POST['venue'] ?? '';
+$eventcapacity = $_POST['capacity'] ?? '';
+
+$result = mysqli_query($conn, "INSERT INTO events (title, description, event_date, category, start_time, end_time, venue, capacity) VALUES ('$eventtitle', '$eventdescription', '$eventdate', '$eventcategory', '$eventstarttime', '$eventendtime', '$eventvenue', $eventcapacity)");
+if($result){
+ $message = 'Event created successfully.';
+$message_type = 'success';
+}else{
+  $message = 'Error creating event';
+  $message_type = 'error';
+}
+}
+
+if(isset($_GET['id'])) {
+  $event_id = (int)$_GET['id'];
+  $result = mysqli_query($conn, "SELECT * FROM events WHERE id = $event_id");
+  $event = mysqli_fetch_assoc($result);
+  if ($event) {
+    // Pre-fill the form with existing event data
+    $eventtitle = $event['title'];
+    $eventdescription = $event['description'];
+    $eventdate = $event['event_date'];
+    $eventcategory = $event['category'];
+    $eventstarttime = $event['start_time'];
+    $eventendtime = $event['end_time'];
+    $eventvenue = $event['venue'];
+    $eventcapacity = $event['capacity'];
+  } else {
+    // No such event, redirect to manage-events.php
+    header("Location: manage-events.php");
+    exit();
+  }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,8 +72,14 @@
 </header>
 <main class="container">
   <div class="page-head"><h1>Add new event</h1><p>The same form works for editing. In PHP, fill the fields with the saved values when an id is in the link.</p></div>
+  <?php if ($message): ?>
+  <div class="alert alert-<?= $message_type ?>"><?= $message ?></div>
+<?php endif; ?>
+
+<div class="form-box">
+  <form action="" method="post">
   <div class="form-box">
-    <form action="save-event.php" method="post">
+    <form action="" method="post">
       <!-- PHP: for edit, add <input type="hidden" name="id" value="..."> -->
       <div class="field"><label for="title">Event title</label><input type="text" id="title" name="title" required></div>
       <div class="field"><label for="description">Description</label><textarea id="description" name="description" required></textarea></div>
@@ -41,10 +96,7 @@
         <div class="field"><label for="venue">Venue</label><input type="text" id="venue" name="venue" required></div>
         <div class="field"><label for="capacity">Total seats</label><input type="number" id="capacity" name="capacity" min="1" required></div>
       </div>
-      <div class="field" style="display:flex;gap:.6rem;align-items:center">
-        <input type="checkbox" id="notify" name="notify" style="width:auto">
-        <label for="notify" style="margin:0">Email registered users about this change</label>
-      </div>
+     
       <button class="btn" type="submit">Save event</button>
       <a class="btn btn-outline" href="manage-events.php">Cancel</a>
     </form>

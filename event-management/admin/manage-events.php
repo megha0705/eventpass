@@ -1,3 +1,19 @@
+<?php
+include '../db-config.php';
+if(session_status() == PHP_SESSION_NONE){
+session_start();
+} 
+$event_details= mysqli_query($conn, "SELECT e.title, e.event_date, e.venue ,e.id, e.capacity, COUNT(r.id) as registered FROM events e LEFT JOIN registrations r ON e.id = r.event_id GROUP BY e.id ORDER BY event_date, start_time");
+if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id'])) {
+  $event_id = (int)$_POST['id'];
+  // Delete the event
+  $delete_query = "DELETE FROM events WHERE id=$event_id";
+  mysqli_query($conn, $delete_query);
+  header("Location: manage-events.php");
+  exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,18 +49,22 @@
       <thead><tr><th>Event</th><th>Date</th><th>Venue</th><th>Registered</th><th>Actions</th></tr></thead>
       <tbody>
         <!-- PHP: loop over events -->
-        <tr><td>Web Development Workshop</td><td>15 Dec 2026</td><td>Seminar Hall A</td><td>58 / 100</td>
-          <td class="actions">
-            <a class="btn btn-outline btn-sm" href="registrations.php">Attendees</a>
-            <a class="btn btn-outline btn-sm" href="event-form.php?id=1">Edit</a>
-            <form action="delete-event.php" method="post" onsubmit="return confirm('Delete this event?');"><input type="hidden" name="id" value="1"><button class="btn btn-danger btn-sm" type="submit">Delete</button></form>
-          </td></tr>
-        <tr><td>Tech Talk: Careers in AI</td><td>20 Dec 2026</td><td>Auditorium</td><td>80 / 200</td>
-          <td class="actions">
-            <a class="btn btn-outline btn-sm" href="registrations.php">Attendees</a>
-            <a class="btn btn-outline btn-sm" href="event-form.php?id=2">Edit</a>
-            <form action="delete-event.php" method="post" onsubmit="return confirm('Delete this event?');"><input type="hidden" name="id" value="2"><button class="btn btn-danger btn-sm" type="submit">Delete</button></form>
-          </td></tr>
+        <?php while($event = mysqli_fetch_assoc($event_details)): ?>
+          <tr>
+            <td><?= $event['title'] ?></td>
+            <td><?= $event['event_date'] ?></td>
+            <td><?= $event['venue'] ?></td>
+            <td><?= $event['registered'] ?> / <?= $event['capacity'] ?></td>
+            <td class="actions">
+              <a class="btn btn-outline btn-sm" href="registrations.php?event_id=<?= $event['id'] ?>">Attendees</a>
+              <a class="btn btn-outline btn-sm" href="event-form.php?id=<?= $event['id'] ?>">Edit</a>
+              <form action="" method="post" onsubmit="return confirm('Delete this event?');">
+                <input type="hidden" name="id" value="<?= $event['id'] ?>">
+                <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+              </form>
+            </td>
+          </tr>
+        <?php endwhile; ?>
       </tbody>
     </table>
   </div>
