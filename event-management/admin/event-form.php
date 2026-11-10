@@ -26,26 +26,7 @@ $message_type = 'success';
 }
 }
 
-if(isset($_GET['id'])) {
-  $event_id = (int)$_GET['id'];
-  $result = mysqli_query($conn, "SELECT * FROM events WHERE id = $event_id");
-  $event = mysqli_fetch_assoc($result);
-  if ($event) {
-    // Pre-fill the form with existing event data
-    $eventtitle = $event['title'];
-    $eventdescription = $event['description'];
-    $eventdate = $event['event_date'];
-    $eventcategory = $event['category'];
-    $eventstarttime = $event['start_time'];
-    $eventendtime = $event['end_time'];
-    $eventvenue = $event['venue'];
-    $eventcapacity = $event['capacity'];
-  } else {
-    // No such event, redirect to manage-events.php
-    header("Location: manage-events.php");
-    exit();
-  }
-}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">

@@ -57,7 +57,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id'])) {
             <td><?= $event['registered'] ?> / <?= $event['capacity'] ?></td>
             <td class="actions">
               <a class="btn btn-outline btn-sm" href="registrations.php?event_id=<?= $event['id'] ?>">Attendees</a>
-              <a class="btn btn-outline btn-sm" href="event-form.php?id=<?= $event['id'] ?>">Edit</a>
+              <a class="btn btn-outline btn-sm" href="update-form.php?id=<?= $event['id'] ?>">Edit</a>
               <form action="" method="post" onsubmit="return confirm('Delete this event?');">
                 <input type="hidden" name="id" value="<?= $event['id'] ?>">
                 <button class="btn btn-danger btn-sm" type="submit">Delete</button>

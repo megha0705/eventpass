@@ -8,7 +8,7 @@ $total_upcoming = mysqli_query($conn, "SELECT COUNT(*) as upcoming_count FROM ev
 $total_registrations = mysqli_query($conn, "SELECT COUNT(*) as registration_count FROM registrations");
 $total_notifications = mysqli_query($conn, "SELECT COUNT(*) as notification_count FROM notifications");
 
-$latest_registrations = mysqli_query($conn, "SELECT r.registered_at as registered_at, u.name AS user_name, u.email AS user_email, e.title AS event_title FROM registrations r JOIN users u ON r.user_id = u.id JOIN events e ON r.event_id = e.id ORDER BY r.registered_at DESC LIMIT 5");
+$latest_registrations = mysqli_query($conn, "SELECT r.registered_at as registered_at, u.name AS user_name, u.email AS user_email, e.title AS event_title FROM registrations r JOIN users u ON r.user_id = u.id JOIN events e ON r.event_id = e.id  ORDER BY r.registered_at DESC LIMIT 5");
 ?>
 
 <!DOCTYPE html>
